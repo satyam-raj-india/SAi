@@ -58,7 +58,7 @@ function addBotMessage(message) {
 function addTypingIndicator() {
     const div = document.createElement('div');
     div.className = 'msg bot typing';
-    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">Typing...`;
+    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">Typing...`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return div;
@@ -252,4 +252,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') handleSend();
     });
     fetchJsonData();
+
 });
