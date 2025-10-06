@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Image Search</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #F8F5E6;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #1A2843;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        form {
+            background: #36456C;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #46556A;
+            color: #ffffff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        input[type="text"]::placeholder {
+            color: #a0a0a0;
+        }
+        button {
+            background-color: #46556A;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #E7DDD1;
+        }
+        button:disabled {
+            background-color: #E7DDD1;
+            cursor: not-allowed;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #3a3a3a;
+            border-top: 4px solid #00aaff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .image-card {
+            background: #E7DDD1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+        .image-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            loading: lazy;
+        }
+        .image-info {
+            padding: 15px;
+            text-align: center;
+        }
+        .image-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        .image-info a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+        .image-info a:hover {
+            text-decoration: underline;
+        }
+        .download-btn {
+            background-color: #1A2843;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        .download-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        #error {
+            color: #ff4d4d;
+            background: #3a1c1c;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        .footer a {
+            color: #00aaff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.8rem; }
+            #results { grid-template-columns: 1fr; }
+            .image-card img { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Image Search</h1>
+    <form id="searchForm">
+        <label for="query">Search for images</label>
+        <input type="text" id="query" placeholder="Type Mountains" required>
+        <button type="submit">Search Images</button>
+    </form>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Fetching images from Unsplash...</p>
+    </div>
+    <div id="results"></div>
+    <div id="error"></div>
+    <div class="footer">
+        Powered by <a href="https://tinyurl.com/S4tyam" target="_blank">Unsplash</a>
+    </div>
+
+    <script>
+        const ACCESS_KEY = 'P7iyFrJqj1giuOFGN7gujg4feWIhg0NLGTWT4O_4uOE'; // Unsplash Access Key
+        const ENDPOINT = 'https://api.unsplash.com/search/photos';
+
+        const form = document.getElementById('searchForm');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorEl = document.getElementById('error');
+
+        // Function to trigger custom download
+        async function downloadImage(imageUrl, downloadTrackUrl, fileName, btn) {
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Downloading...';
+
+                // Track download via Unsplash API (required)
+                await fetch(`${downloadTrackUrl}&client_id=${ACCESS_KEY}`, { method: 'GET' });
+
+                // Fetch the image as a Blob
+                const response = await fetch(imageUrl);
+                if (!response.ok) throw new Error('Failed to fetch image data');
+                const blob = await response.blob();
+
+                // Create a temporary URL and trigger download
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName || 'unsplash-image.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                errorEl.textContent = `Download failed: ${error.message}`;
+                errorEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Download';
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('query').value.trim();
+            if (!query) return;
+
+            // Reset UI
+            results.innerHTML = '';
+            errorEl.style.display = 'none';
+            loading.style.display = 'block';
+            form.querySelector('button').disabled = true;
+
+            try {
+                const response = await fetch(`${ENDPOINT}?query=${encodeURIComponent(query)}&per_page=12`, {
+                    headers: {
+                        'Authorization': `Client-ID ${ACCESS_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const photos = data.results;
+
+                if (photos.length === 0) {
+                    errorEl.textContent = 'No images found for this query. Try a different search term.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                photos.forEach(photo => {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.innerHTML = `
+                        <img src="${photo.urls.regular}" alt="${photo.alt_description || query}" loading="lazy">
+                        <div class="image-info">
+                            <p>By <a href="${photo.user.links.html}?utm_source=your_app&utm_medium=referral" target="_blank">${photo.user.name}</a></p>
+                            <button class="download-btn" data-image-url="${photo.urls.full}" data-download-url="${photo.links.download}" data-filename="unsplash-${photo.id}.jpg">Download</button>
+                        </div>
+                    `;
+                    results.appendChild(card);
+                });
+
+                // Add download button listeners
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const imageUrl = btn.getAttribute('data-image-url');
+                        const downloadTrackUrl = btn.getAttribute('data-download-url');
+                        const fileName = btn.getAttribute('data-filename');
+                        downloadImage(imageUrl, downloadTrackUrl, fileName, btn);
+                    });
+                });
+            } catch (error) {
+                errorEl.textContent = `Error: ${error.message}. Check your API key or try again later.`;
+                errorEl.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                form.querySelector('button').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
