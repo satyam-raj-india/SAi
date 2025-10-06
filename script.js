@@ -48,7 +48,7 @@ function addBotMessage(message) {
     if (welcome) welcome.remove();
     const div = document.createElement('div');
     div.className = 'msg bot';
-    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">${message}`;
+    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     messageHistory.push({ type: 'bot', text: message });
@@ -95,10 +95,10 @@ async function sendToWebhook() {
 function fixSpelling(input) {
     const corrections = {
         'hj': 'hi',
-        'hii': 'hi',
-        'hiii': 'hi',
-        'hiiii': 'hi',
-        'hiiiii': 'hi',
+        'hio': 'hi',
+        'hl9': 'hi',
+        'hlo': 'hi',
+        'satyam': 'How is satyam',
         'hiiiiii': 'hi'
     };
     return corrections[input.toLowerCase()] || input;
@@ -254,3 +254,4 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchJsonData();
 
 });
+
