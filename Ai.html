@@ -32,11 +32,42 @@
             z-index: 1000;
         }
 
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
         header h1 {
             color: #D0C8C5;
             font-size: 1.8rem;
             font-weight: 600;
-            text-align: center;
+        }
+
+        #imageBtn {
+            background: #223556;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: background 0.2s ease;
+        }
+
+        #imageBtn:hover {
+            background: #172236;
+        }
+
+        .box-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
         }
 
         .chat-container {
@@ -47,6 +78,7 @@
             margin-top: 80px;
             margin-bottom: 70px;
             overflow-y: auto;
+            scroll-behavior: smooth; /* Added for smooth scrolling */
         }
 
         .chat-container::-webkit-scrollbar {
@@ -191,6 +223,16 @@
                 font-size: 1.5rem;
             }
 
+            #imageBtn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .box-icon {
+                width: 20px;
+                height: 20px;
+            }
+
             .msg {
                 max-width: 90%;
                 padding: 12px 15px;
@@ -209,7 +251,12 @@
 </head>
 <body>
     <header>
-        <h1>Satyam AI</h1>
+        <div class="header-content">
+            <h1>Satyam AI</h1>
+            <button id="imageBtn" title="View Image">
+                <img src="sai.jpg" alt="Box Icon" class="box-icon">
+            </button>
+        </div>
     </header>
     <div class="chat-container" id="chat">
         <div class="welcome-message">
@@ -223,5 +270,10 @@
     </div>
     <script src="maths.js"></script>
     <script src="script.js"></script>
+    <script>
+        document.getElementById('imageBtn').addEventListener('click', function() {
+            window.location.href = 'image.html';
+        });
+    </script>
 </body>
 </html>
