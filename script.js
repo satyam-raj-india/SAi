@@ -16,6 +16,7 @@ const sendBtn = document.getElementById('sendBtn');
 // State
 let jsonData = [];
 let messageHistory = [];
+let answerIndexCache = {}; // Tracks last used answer index for each question
 
 // Data Fetching
 async function fetchJsonData() {
@@ -48,7 +49,7 @@ function addBotMessage(message) {
     if (welcome) welcome.remove();
     const div = document.createElement('div');
     div.className = 'msg bot';
-    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">${message}`;
+    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     messageHistory.push({ type: 'bot', text: message });
@@ -58,7 +59,7 @@ function addBotMessage(message) {
 function addTypingIndicator() {
     const div = document.createElement('div');
     div.className = 'msg bot typing';
-    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">Typing...`;
+    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">Typing...`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return div;
@@ -95,11 +96,11 @@ async function sendToWebhook() {
 function fixSpelling(input) {
     const corrections = {
         'hj': 'hi',
+        'hii': 'hi',
+        'hoi': 'hi',
         'hio': 'hi',
-        'hl9': 'hi',
-        'hlo': 'hi',
-        'satyam': 'How is satyam',
-        'hiiiiii': 'hi'
+        'satyam': 'Who is satham',
+        'hlo': 'hi'
     };
     return corrections[input.toLowerCase()] || input;
 }
@@ -132,7 +133,7 @@ function countMatchingWords(userInput, question) {
 function findBestMatch(input) {
     input = input.toLowerCase().trim();
     
-    let bestMatch = null;
+    let bestMatches = [];
     let highestMatchCount = 0;
     
     for (const item of jsonData) {
@@ -140,13 +141,23 @@ function findBestMatch(input) {
         
         if (matchCount > highestMatchCount) {
             highestMatchCount = matchCount;
-            bestMatch = item;
+            bestMatches = [item];
+        } else if (matchCount === highestMatchCount && matchCount > 0) {
+            bestMatches.push(item);
         }
     }
     
-    // Only return if we have at least minimum required matches
-    if (highestMatchCount >= CONFIG.minMatchCount && bestMatch) {
-        return { answer: bestMatch.Answer, matchCount: highestMatchCount };
+    if (highestMatchCount >= CONFIG.minMatchCount && bestMatches.length > 0) {
+        const questionKey = bestMatches[0].Question.toLowerCase();
+        
+        if (!answerIndexCache[questionKey]) {
+            answerIndexCache[questionKey] = 0;
+        } else {
+            answerIndexCache[questionKey] = (answerIndexCache[questionKey] + 1) % bestMatches.length;
+        }
+        
+        const selectedItem = bestMatches[answerIndexCache[questionKey]];
+        return { answer: selectedItem.Answer, matchCount: highestMatchCount };
     }
     
     return null;
@@ -252,6 +263,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') handleSend();
     });
     fetchJsonData();
-
 });
-
