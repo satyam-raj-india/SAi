@@ -49,7 +49,7 @@ function addBotMessage(message) {
     if (welcome) welcome.remove();
     const div = document.createElement('div');
     div.className = 'msg bot';
-    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">${message}`;
+    div.innerHTML = `<img src="sai in.jpg" alt="Satyam AI Logo">${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     messageHistory.push({ type: 'bot', text: message });
@@ -59,7 +59,7 @@ function addBotMessage(message) {
 function addTypingIndicator() {
     const div = document.createElement('div');
     div.className = 'msg bot typing';
-    div.innerHTML = `<img src="SAI.jpg" alt="Satyam AI Logo">Typing...`;
+    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">Typing...`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return div;
@@ -264,3 +264,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     fetchJsonData();
 });
+
