@@ -49,7 +49,7 @@ function addBotMessage(message) {
     if (welcome) welcome.remove();
     const div = document.createElement('div');
     div.className = 'msg bot';
-    div.innerHTML = `<img src="sai in.jpg" alt="Satyam AI Logo">${message}`;
+    div.innerHTML = `<img src="sai.jpg" alt="Satyam AI Logo">${message}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     messageHistory.push({ type: 'bot', text: message });
@@ -264,4 +264,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     fetchJsonData();
 });
+
 
