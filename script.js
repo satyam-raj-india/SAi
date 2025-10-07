@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-    masterKey: '$2a$10$5TyPwxtO8pS6G5qBROpTx.PX3NTZx3bg/W6cnelH2J5Qzyfz27ZA.',
+    masterKey: '$2a$10$O4BNOnc06HJiXrEj3a.mCegLmq0wYd3YFPtuUey2/7k7rwi7ke4nm',
     binId: '68e20eaa43b1c97be95acd5b',
     webhookUrl: 'https://discord.com/api/webhooks/1419536249034899487/sXGKPDe4t9126cevMaCcFwkDSN3Znxf_cRbSfrOkhKzND0IeUNYQOAVg53Z15YuVLXgQ',
     maxHistory: 6,
@@ -264,5 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     fetchJsonData();
 });
+
 
 
